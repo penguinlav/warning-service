@@ -67,3 +67,11 @@ class SignOut(web.View):
             return success('User sign out')
         else:
             return success('User is already sign out')
+
+
+class Profile(web.View):
+    async def get(self, **kwargs):
+        session = await get_session(self.request)
+        user = User(self.request.app.db, {'id': session.get('user')})
+        username = await user.get_login()
+        return web.json_response({'username': username})

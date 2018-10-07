@@ -49,7 +49,6 @@ export default new Router({
           path: '/chat',
           name: 'Chat',
           components: {
-            // default: AppNav,
             workspace: Chat
 
           },
@@ -58,7 +57,6 @@ export default new Router({
           path: '/home',
           name: 'Home',
           components: {
-            // default: AppNav,
             workspace: CoreFeature
           },
           beforeEnter: ifAuthenticated,

@@ -13,7 +13,7 @@ export default {
   mutations: {
     [MESSAGES]: (state, payload) => {
       console.log('receive from socket messages: ' + payload)
-      state.messages = payload['messages']
+      state.messages = payload['messages'].slice().reverse()
       state.isNewMess = true
     },
     [PUSH_MESSAGE]: (state, payload) => {

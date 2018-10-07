@@ -1,5 +1,5 @@
 from chat.views import ChatList
-from auth.views import Auth, SignIn, SignOut
+from auth.views import Auth, SignIn, SignOut, Profile
 
 
 routes = [
@@ -8,4 +8,5 @@ routes = [
     ('*',   '/api/auth',   Auth,     'auth'),
     ('*',   '/api/signin',  SignIn,    'signin'),
     ('*',   '/api/signout', SignOut,   'signout'),
+    ('GET', '/api/profile', Profile, 'profile')
 ]

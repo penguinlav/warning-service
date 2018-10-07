@@ -1,5 +1,6 @@
 import Vue from 'vue'
 var audio = new Audio(require('./../../assets/beep-03.mp3'))
+import { ONE_MESSAGE } from 'store/actions/chat'
 export default {
   namespaced: true,
 
@@ -7,31 +8,34 @@ export default {
     states: false,
   },
 
+  getters: {
+    isAFK: state => state.states['afk'],
+    connectState: (state) => state.isConnected    
+  },
+
   mutations: {
     SOCKET_CORE_UPDSTATES(state, payload) {
-      console.log('socket: switch state cp: ' + payload)
+      console.log('socket: switch state cp: ', payload)
       state.states = payload
       console.log('mut upd')
-      
     },
-    // SOCKET_CONNECT(state) {
-    //   console.log('ws connect dispatch')
-    // },
   },
 
   actions: {
+    TOGLE_AFK({state}) {
+      //TODO
+    },
     updState({ state }, payload) {
-      console.log('switch state: '+ payload);
+      console.log('switch state: ',  payload);
       (new Vue()).$socket.emit('core_updstate', payload)
-      // this.$socket.emit('switch_state', {1:1})
     },
     socket_CORE_UPDSTATES({commit}, payload) {
-      console.log('action upd')
+      console.log('action upd ', payload)
+    },
+    socket_coreEvent({dispatch}, payload) {
+      payload['type'] = 'event'
+      dispatch('chat/' + ONE_MESSAGE, payload, {root: true})
+      console.log('event ', payload)
     }
   },
-  
-
-  getters: {
-    connectState: (state) => state.isConnected
-  }
 }

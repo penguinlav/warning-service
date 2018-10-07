@@ -5,6 +5,9 @@
       <v-flex d-flex xs3>
         <v-layout column wrap>
           <v-flex d-flex>
+            <v-card :class="{'headline item':true, 'red':states['tea']}" @click.native="updState('tea')" hover><span :hidden=hidePlaces>Tea room</span></v-card>
+          </v-flex>
+          <v-flex d-flex>
             <v-card :class="{'headline item':true, 'red':states['lec1']}" @click.native="updState('lec1')" hover><span :hidden=hidePlaces>Сlassroom 1</span></v-card>
           </v-flex>
   

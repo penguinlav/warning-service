@@ -1,7 +1,8 @@
 import axios from 'axios'
 import Vue from 'vue'
 
-import { AUTH_REQUEST, AUTH_ERROR, AUTH_SUCCESS, AUTH_LOGOUT, UPDATE_TOKEN } from 'store/actions/auth'
+import { AUTH_REQUEST, AUTH_ERROR, AUTH_SUCCESS, AUTH_LOGOUT, UPDATE_TOKEN, GET_PROFILE } from 'store/actions/auth'
+import { UPDATE_PROFILE } from 'store/mutations/auth'
 import { STOP_WEBSOCKET } from 'store/actions/default'
 
 import apiCall from '../utils/api'
@@ -15,6 +16,7 @@ export default {
   state: {
     token: window.$cookies.get('AIOHTTP_SESSION') || '',  //localStorage.getItem('user-token') || '',
     status: '',
+    profile: {username: ''}
   },
 
   getters: {
@@ -28,7 +30,6 @@ export default {
         commit(AUTH_REQUEST)
         apiCall({ url: 'auth', data: user, method: 'POST', })
           .then(resp => {
-            console.log('auth succsess')
             // localStorage.setItem('user-token', resp.token)
             // Here set the header of your ajax library to the token value.
             // example with axios
@@ -82,6 +83,23 @@ export default {
           })
       })
     },
+    [GET_PROFILE]: ({ commit }) => {
+      apiCall({ url: 'profile', method: 'GET' })
+        .then(resp => {
+          console.log('profile: ', resp)
+          commit(UPDATE_PROFILE, resp.data)
+          // localStorage.setItem('user-token', resp.token)
+          // Here set the header of your ajax library to the token value.
+          // example with axios
+          // axios.defaults.headers.common['Authorization'] = resp.token
+          // commit(AUTH_SUCCESS, resp)
+          // dispatch(USER_REQUEST)
+          // resolve(resp)
+          console.log('then signout api')
+        })
+        .catch(err => { console.log('Profile error: ', err) })
+
+    }
   },
 
   mutations: {
@@ -97,8 +115,12 @@ export default {
     [AUTH_LOGOUT]: (state, token) => {
     },
     [UPDATE_TOKEN]: (state) => {
-    state.token = window.$cookies.get('AIOHTTP_SESSION') || ''
+      state.token = window.$cookies.get('AIOHTTP_SESSION') || ''
       console.log('token updated')
+    },
+    [UPDATE_PROFILE]: (state, payload) => {
+      console.log('Profile: ', payload)
+      state.profile = payload
     }
   }
 }

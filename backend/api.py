@@ -56,7 +56,9 @@ app.core_states = {
     'lab3': False,
     'lec1': False,
     'lec2': False,    
-    'lec3': False,            
+    'lec3': False,  
+    'tea': False,
+    'afk': False         
 }
 
 sio.attach(app)
@@ -92,7 +94,7 @@ class NSws(socketio.AsyncNamespace):
 
         self.server.logger.info(f"connect {sid} environ {environ}")
         await self.emit('core_updstates', self.app.core_states)
-        await self.send_messages()
+        await self.send_messages(sid)
 
     async def on_disconnect(self, sid):
         self.server.logger.info(f'disconnect {sid}')
@@ -101,25 +103,39 @@ class NSws(socketio.AsyncNamespace):
     async def send_users_list(self):
         pass
 
+    # get_sesssion
     async def on_core_updstate(self, sid, name_place):
         self.app.core_states[name_place] = not self.app.core_states[name_place]
         self.server.logger.info(f'sid: {sid}, name_place: {name_place}')
         await self.emit('core_updstates', self.app.core_states)
 
-    async def send_messages(self):
-        message = Message(self.app.db)
-        messages = await message.get_messages()
-        self.server.logger.info(f'send messages: {messages}')
-        await self.emit('chat_messages', {'messages': messages})
-
-    async def chat_message(self, sid):
-        message = Message(self.app.db)
-        messages = await message.get_messages()
-        self.server.logger.info(f'send messages: {messages}')
         client = self.clients[sid]
-        login = await client.get_login()
-        m = {'user': login, 'msg': 'mmmeesaggeee', 'time': str(datetime.now().timestamp())}
-        await self.emit('chat_messages', {'messages': [m, m]})
+        login = await self.clients[sid].login
+        message = Message(self.app.db)
+        messages = await message.get_messages()
+        result, m_dict = await message.save_event(user=login, place=name_place, state=self.app.core_states[name_place])
+        
+        await self.emit('core_event', m_dict)
+        # await self.emit('core_event', {
+        #     'username': username, 
+        #     'place': name_place, 'state': 'on' if self.app.core_states[name_place] else 'off',
+        #     'time': datetime.now().timestamp()
+        #     })
+
+    async def send_messages(self, sid=None):
+        message = Message(self.app.db)
+        messages = await message.get_messages()
+        self.server.logger.info(f'send messages: {messages}')
+        await self.emit('chat_messages', {'messages': messages}, room=sid)
+
+    # async def chat_message(self, sid):
+    #     message = Message(self.app.db)
+    #     messages = await message.get_messages()
+    #     self.server.logger.info(f'send messages: {messages}')
+    #     client = self.clients[sid]
+    #     login = await client.get_login()
+    #     m = {'user': login, 'msg': 'mmmeesaggeee', 'time': str(datetime.now().timestamp())}
+    #     await self.emit('chat_messages', {'messages': [m, m]})
 
     async def on_messagetoserver(self, sid, msg):
         message = Message(self.app.db)

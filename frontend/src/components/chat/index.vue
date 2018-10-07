@@ -7,7 +7,9 @@
       </v-container>
     </v-card>
     <template v-for="(message, index) in messages">
-        <Message :key="index" :ind="index" :user="message.user" :time="message.time" :lenmsg="messages.length" :msg="message.msg" />
+
+        <Message v-if="message.type!='event'" :key="index" :ind="index" :user="message.user" :time="message.time" :lenmsg="messages.length" :msg="message.msg" />
+        <Event v-else :key="index" :user="message.user" :time="message.time" :state="message.state" :place="message.place" />
 </template>
 
           <v-card elevation-23 class="chatsend">
@@ -35,11 +37,13 @@
   } from "store/actions/chat";
   import VueScrollTo from 'vue-scrollto'
   import Message from './message'
+  import Event from './event'
   
   export default {
     name: "Chat",
     components: {
-      Message
+      Message,
+      Event
     },
     props: {
       show: {
