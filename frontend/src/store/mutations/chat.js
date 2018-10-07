@@ -1,0 +1,6 @@
+export const MESSAGES = 'SOCKET_CHAT_MESSAGES'
+export const PUSH_MESSAGE = 'PUSH_MESSAGE'
+export const OPEN_CHAT = 'OPEN_CHAT'
+export const CLOSE_CHAT = 'CLOSE_CHAT'
+export const INC_COUNTER = 'INC_COUNTER'
+export const RESET_COUNTER = 'RESET_COUNTER'

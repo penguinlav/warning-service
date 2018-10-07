@@ -1,0 +1,3 @@
+export const START_WEBSOCKET = 'START_WEBSOCKET'
+export const STOP_WEBSOCKET = 'STOP_WEBSOCKET'
+export const START_UP_TIME = 'START_UP_TIME'

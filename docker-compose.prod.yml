@@ -1,0 +1,39 @@
+version: '3'
+services:
+  web:
+    image: warning-service/web
+    build:
+      context: ./
+      dockerfile: deploy/web.dockerfile
+    ports: 
+      - "8080:8000"
+      - "9922:22"
+    volumes:
+      - ./backend/:/app/
+    command: bash -c "service ssh restart && python api.py" 
+
+  nginx:
+    image: warning-service/nginx_with_front
+    build:
+      context: ./
+      dockerfile: deploy/front.prod.dockerfile
+    restart: always
+    ports:
+      - 8000:80
+    
+    # command: 'sleep 36000'  # sleep infinity
+      # command: tail -f /dev/null
+      # depends_on:
+      #   - server
+      # ports:
+      #   - "8000:8000"
+      # restart: always
+
+# volumes:
+#         node_modules:
+#           driver_opts:
+#            type: none
+#            device:  ${PWD}/frontend/node_modules
+#            o: bind
+
+    

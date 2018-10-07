@@ -1,0 +1,104 @@
+version: '3'
+services:
+#   web:
+#     image: warning-service/web
+#     build:
+#       context: ./
+#       dockerfile: deploy/web.dockerfile
+#     ports: 
+#       # - "9922:22"
+#       - "8000:8000"
+#       # - "8001:8001"
+#       # - "8888:8888"
+      
+#     volumes:
+#       - ./backend/:/app/
+# #    command: bash -c "adev runserver api.py" 
+#     # depends_on:
+#     #   - mongo
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      dev:
+        aliases:
+          - mongo.dev
+
+  front:
+    image: warning-service/front
+    build:
+      context: ./
+      dockerfile: deploy/front.dockerfile
+    volumes:
+      - ./frontend/:/app/
+      - /app/node_modules              
+      # - node_modules:/app/node_modules        
+    ports:
+      - "8081:8080"
+    command:  npm run dev  # sleep infinity
+    networks:
+      dev:
+        aliases:
+          - front.dev
+
+  web_run:
+    image: warning-service/web
+    build:
+      context: ./
+      dockerfile: deploy/web.dockerfile
+    ports: 
+      # - "9922:22"
+      - "8001:8001"
+      - "8002:8000"
+      - "8888:8888"
+      
+      # - "8001:8001"
+      # - "8888:8888"
+      
+    volumes:
+      - ./backend/:/app/
+    command: bash -c "adev runserver api.py" 
+    networks:
+      dev: # чтобы наш хостовый nginx мог достучаться по общей с прокси сети до других контейнеров в той же сети
+        aliases:
+          - api.run.dev
+
+  nginx:
+    image: warning-service/nginx
+    build:
+      context: ./
+      dockerfile: deploy/nginx.dev.dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./deploy/nginx.dev.conf:/etc/nginx/nginx.conf
+    command: /bin/sh -c "nginx -g 'daemon off;' & /home/auto.sh" 
+    depends_on:
+      - front
+      - web_run
+    networks:
+      dev:
+        aliases:
+          - nginx.dev
+  
+networks:
+  dev:
+    
+
+      # environment:
+        # - SQLALCHEMY_DATABASE_URI=postgresql://postgres:postgres@db:5432
+        # Making production the default.
+        # - QUIZ_ENV=production
+    # db:
+    #   image: postgres:10.2-alpine
+    #   environment:
+    #     - POSTGRES_USER=postgres
+    #     - POSTGRES_PASSWORD=postgres
+# volumes:
+#         node_modules:
+#           driver_opts:
+#            type: none
+#            device:  ${PWD}/frontend/node_modules
+#            o: bind
