@@ -87,34 +87,23 @@
         console.log("Get more messages");
       },
       sendMessage(mess) {
-        console.log("messages component: ", this.messages, this.currentTimestamp);
         this.messageToServer(mess);
         this.mess_field = "";
       },
       updEndPage() {
         let mdiv = document.querySelector(this.containerSelector)
         this.endPage = Math.abs(mdiv.clientHeight - (mdiv.scrollHeight - mdiv.scrollTop)) < 600
-        console.log('end ' + this.endPage)
-        console.log('clientHeight: ' + mdiv.clientHeight)
-        console.log('scrollHeight: ' + mdiv.scrollHeight)
-        console.log('scrollTop: ' + mdiv.scrollTop)
-        console.log('offsetTop: ' + mdiv.offsetTop)
   
       },
       scrollto() {
         var cancelScroll = VueScrollTo.scrollTo('.chat_dialog2', 1000, {
           container: this.containerSelector,
           onDone: (el) => {
-            console.log("Done ", el)
             this.scrollState = false
           },
           cancelable: false,
           onStart: (el) => {
-            console.log("Start ", el)
             this.scrollState = true
-          },
-          onCancel: (el) => {
-            console.log("Cancel ", el)
           },
         })
       },
@@ -135,13 +124,9 @@
 
 <style>
   .chatsend {
+    z-index: 1;
     position: sticky;
     bottom: 0px;
   }
-  
-  
-  /* .core {
-               position: sticky;
-              bottom: 300px;
-            } */
+
 </style>

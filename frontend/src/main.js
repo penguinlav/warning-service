@@ -10,6 +10,8 @@ import router from './router'
 import VueSocketio from 'vue-socket.io-extended'
 import io from 'socket.io-client'
 import Vuetify from 'vuetify'
+import Notifications from 'vue-notification'
+Vue.use(Notifications)
 
 var VueScrollTo = require('vue-scrollto');
  
@@ -18,6 +20,11 @@ Vue.use(VueScrollTo)
 import VueCookies from 'vue-cookies'
 Vue.use(VueCookies)
 Vue.use(require('vue-moment'))
+
+Vue.filter('reverse', function(value) {
+  // slice to make a copy of array, then reverse the copy
+  return value.slice().reverse();
+});
 
 // const PORT = 8000
 // const PORT_WS = process.env.PORT_WS

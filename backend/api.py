@@ -1,4 +1,6 @@
 import json
+import random
+import string
 from aiohttp import web
 from aiohttp_session import session_middleware
 import socketio
@@ -34,10 +36,14 @@ async def error_middleware(request, handler):
     #     message = ex.reason
     # return web.json_response({'error': message})
 
+KEY = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
+# KEY = "test"
 
 app = web.Application(middlewares=[
     # error_middleware,
-    session_middleware(EncryptedCookieStorage(hashlib.sha256(bytes(SECRET_KEY, 'utf-8')).digest(), httponly=False)),
+    session_middleware(EncryptedCookieStorage(hashlib.sha256(bytes(
+        KEY
+        , 'utf-8')).digest(), httponly=False)),
     authorize
 ])
 

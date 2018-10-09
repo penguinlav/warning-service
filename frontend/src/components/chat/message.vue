@@ -18,8 +18,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
-import { toColor } from "utils/avatar"
+import { mapState } from "vuex";
+import { toColor } from "utils/avatar";
 export default {
   name: "Message",
 

@@ -5,12 +5,12 @@ export default {
   namespaced: true,
 
   state: {
-    states: false,
+    states: {},
   },
 
   getters: {
     isAFK: state => state.states['afk'],
-    connectState: (state) => state.isConnected    
+    connectState: (state) => state.isConnected
   },
 
   mutations: {
@@ -22,19 +22,16 @@ export default {
   },
 
   actions: {
-    TOGLE_AFK({state}) {
-      //TODO
-    },
     updState({ state }, payload) {
-      console.log('switch state: ',  payload);
+      console.log('switch state: ', payload);
       (new Vue()).$socket.emit('core_updstate', payload)
     },
-    socket_CORE_UPDSTATES({commit}, payload) {
+    socket_CORE_UPDSTATES({ commit }, payload) {
       console.log('action upd ', payload)
     },
-    socket_coreEvent({dispatch}, payload) {
+    socket_coreEvent({ dispatch }, payload) {
       payload['type'] = 'event'
-      dispatch('chat/' + ONE_MESSAGE, payload, {root: true})
+      dispatch('chat/' + ONE_MESSAGE, payload, { root: true })
       console.log('event ', payload)
     }
   },

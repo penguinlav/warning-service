@@ -1,11 +1,12 @@
 import axios from 'axios'
 import Vue from 'vue'
 
-import { AUTH_REQUEST, AUTH_ERROR, AUTH_SUCCESS, AUTH_LOGOUT, UPDATE_TOKEN, GET_PROFILE } from 'store/actions/auth'
-import { UPDATE_PROFILE } from 'store/mutations/auth'
+import { AUTH_REQUEST, AUTH_ERROR, AUTH_SUCCESS, AUTH_LOGOUT, UPDATE_TOKEN, GET_PROFILE, INTERRUPT_SESSION } from 'store/actions/auth'
+import { UPDATE_PROFILE, REMOVE_COOKIE } from 'store/mutations/auth'
 import { STOP_WEBSOCKET } from 'store/actions/default'
 
 import apiCall from '../utils/api'
+import router from 'router'
 
 import VueCookies from 'vue-cookies'
 
@@ -14,9 +15,9 @@ export default {
   namespaced: true,
 
   state: {
-    token: window.$cookies.get('AIOHTTP_SESSION') || '',  //localStorage.getItem('user-token') || '',
+    token: window.$cookies.get('AIOHTTP_SESSION') || '',
     status: '',
-    profile: {username: ''}
+    profile: { username: '' }
   },
 
   getters: {
@@ -30,52 +31,26 @@ export default {
         commit(AUTH_REQUEST)
         apiCall({ url: 'auth', data: user, method: 'POST', })
           .then(resp => {
-            // localStorage.setItem('user-token', resp.token)
-            // Here set the header of your ajax library to the token value.
-            // example with axios
-            // axios.defaults.headers.common['Authorization'] = resp.token
             commit(AUTH_SUCCESS)
             commit(UPDATE_TOKEN)
-
-            // dispatch(USER_REQUEST)
+            dispatch(GET_PROFILE)
             resolve(resp)
           })
           .catch(err => {
             console.log('auth error')
-
             console.log("Api error: ", err)
             commit(AUTH_ERROR, err)
-            // localStorage.removeItem('user-token')
             reject(err)
           })
       })
     },
     [AUTH_LOGOUT]: ({ commit, dispatch, getters }) => {
       return new Promise((resolve, reject) => {
-        // commit(AUTH_LOGOUT)
-        // localStorage.removeItem('user-token')
-        console.log('AUTH_LOGOUT 2')
-
-
         apiCall({ url: 'signout', method: 'GET' })
           .then(resp => {
-            // localStorage.setItem('user-token', resp.token)
-            // Here set the header of your ajax library to the token value.
-            // example with axios
-            // axios.defaults.headers.common['Authorization'] = resp.token
-            // commit(AUTH_SUCCESS, resp)
-            // dispatch(USER_REQUEST)
-            // resolve(resp)
-            console.log('then signout api')
-
-
           })
-          .catch(err => {
-            // commit(AUTH_ERROR, err)
-            // localStorage.removeItem('user-token')
-            // reject(err)
-          }).finally(() => {
-            commit(UPDATE_TOKEN)
+          .finally(() => {
+            dispatch(REMOVE_COOKIE)
             if (!getters.isAuthenticated) {
               dispatch(STOP_WEBSOCKET, null, { root: true })
             }
@@ -84,21 +59,27 @@ export default {
       })
     },
     [GET_PROFILE]: ({ commit }) => {
-      apiCall({ url: 'profile', method: 'GET' })
+      return new Promise((resolve, reject) => {
+        apiCall({ url: 'profile', method: 'GET' })
         .then(resp => {
-          console.log('profile: ', resp)
           commit(UPDATE_PROFILE, resp.data)
-          // localStorage.setItem('user-token', resp.token)
-          // Here set the header of your ajax library to the token value.
-          // example with axios
-          // axios.defaults.headers.common['Authorization'] = resp.token
-          // commit(AUTH_SUCCESS, resp)
-          // dispatch(USER_REQUEST)
-          // resolve(resp)
-          console.log('then signout api')
+          resolve(resp)
         })
-        .catch(err => { console.log('Profile error: ', err) })
-
+        .catch(err => {
+          console.log('Profile error: ', err)
+          reject(err)
+       })
+      })
+      
+    },
+    [REMOVE_COOKIE]: ({ commit }) => {
+      (new Vue).$cookies.remove('AIOHTTP_SESSION')
+      commit(UPDATE_TOKEN)
+    },
+    [INTERRUPT_SESSION]: ({dispatch, commit}) => {
+      dispatch(STOP_WEBSOCKET, null, { root: true })
+      dispatch(REMOVE_COOKIE)
+      router.push('/login')
     }
   },
 

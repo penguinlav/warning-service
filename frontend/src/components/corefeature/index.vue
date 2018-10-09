@@ -1,7 +1,7 @@
 <template>
-  <v-container fill-height grid-list-xs pa-0 justify-center wrap v-resize="onResize" >
-    <v-layout row fill-height v-if="!fullState">     
-      
+  <v-container fill-height grid-list-xs pa-0 justify-center wrap v-resize="onResize">
+    <v-layout row fill-height v-if="!fullState">
+  
       <v-flex d-flex xs3>
         <v-layout column wrap>
           <v-flex d-flex>
@@ -45,78 +45,75 @@
 </template>
 
 <script>
-  import {
-    mapActions,
-    mapState
-  } from "vuex";
-  
-  export default {
-    name: "CoreFeature",
+import { mapActions, mapState } from "vuex";
 
-    props: {
-      turnOffFeatures: {
-        type: Boolean,
-        default: false
-      },
-    },
-  
-    data: function() {
-      return {
-        hidePlaces: false,
-        fullState: false,
-      };
-    },
-    computed: {
-      // примешиваем геттеры в вычисляемые свойства оператором расширения
-      ...mapState("core_features", ["states"])
-    },
-    methods: {
-      ...mapActions("core_features", ["updState"]),
-      // ...mapActions([START_WEBSOCKET]),
-      onResize() {
-        console.log("this.turnOffFeatures: " + this.turnOffFeatures);
-        if (!this.turnOffFeatures) {
-          this.hidePlaces = window.innerWidth <= 840;
-          this.fullState = window.innerWidth <= 600 || window.innerHeight <= 400;
-        } else {
-          this.hidePlaces = true;
-          this.fullState = false;
-        }
+export default {
+  name: "CoreFeature",
+
+  props: {
+    turnOffFeatures: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  data: function() {
+    return {
+      hidePlaces: false,
+      fullState: false
+    };
+  },
+  computed: {
+    // примешиваем геттеры в вычисляемые свойства оператором расширения
+    ...mapState("core_features", ["states"])
+  },
+  methods: {
+    ...mapActions("core_features", ["updState"]),
+    // ...mapActions([START_WEBSOCKET]),
+    onResize() {
+      console.log("this.turnOffFeatures: " + this.turnOffFeatures);
+      if (!this.turnOffFeatures) {
+        this.hidePlaces = window.innerWidth <= 840;
+        this.fullState = window.innerWidth <= 600 || window.innerHeight <= 400;
+      } else {
+        this.hidePlaces = true;
+        this.fullState = false;
       }
     }
-  };
+  }
+};
 </script>
 
 <style>
-  .fullscreen {
-    left: 0px;
-    top: 0px;
-    z-index: 999999;
-    position: fixed;
-    width: 100%;
-    height: 100%;
+.fullscreen {
+  left: 0px;
+  top: 0px;
+  z-index: 999999;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+}
+
+body {
+  margin: 0;
+}
+
+.item {
+  /* border: solid; */
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+  display: -webkit-box;
+}
+
+@keyframes blinkingBack {
+  0% {
+    background-color: #000000;
+  }
+  /* 0%{		background-color: #ffff00;	} */
+  /* 49%{	color: transparent;	} */
+  100% {
     background-color: #ffffff;
   }
-  
-  body {
-    margin: 0;
-  }
-  
-  .item {
-    /* border: solid; */
-    -webkit-box-align: center;
-    -webkit-box-pack: center;
-    display: -webkit-box;
-  }
-  
-  @keyframes blinkingBack {
-    0% {
-      background-color: #000000;
-    }
-    /* 0%{		background-color: #ffff00;	} */
-    /* 49%{	color: transparent;	} */
-    100% {
-      background-color: #ffffff;
-    }
-  }
+}
 </style>
