@@ -1,0 +1,12 @@
+---
+  db:
+    connection: sqlite:////home/antons-shit/nrproject/sauron/backend/test.db
+    users:
+  app:
+    logger_format: '[L:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s'
+    session_secret: test
+    static_folder: ../frontend/dist
+    ldap:
+      #hostport: ldap://localhost:389
+      connect_timeout: 10
+      user_prefix: server-nr\\
