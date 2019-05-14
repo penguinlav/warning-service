@@ -1,12 +1,10 @@
-from chat.views import ChatList
-from auth.views import Auth, SignIn, SignOut, Profile
+from aiohttp import web
+
+from views.auth import Auth, SignOut, Profile
 
 
 routes = [
-    ('GET', '/api/messages',        ChatList,  'messages'),
-    # ('GET', '/ws',      WebSocket, 'chat'),
-    ('*',   '/api/auth',   Auth,     'auth'),
-    ('*',   '/api/signin',  SignIn,    'signin'),
-    ('*',   '/api/signout', SignOut,   'signout'),
-    ('GET', '/api/profile', Profile, 'profile')
+    web.route('*', '/api/auth',   Auth, name='auth'),
+    web.route('*', '/api/signout', SignOut, name='signout'),
+    web.route('GET', '/api/profile', Profile, name='profile'),
 ]

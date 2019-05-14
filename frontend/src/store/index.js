@@ -11,6 +11,7 @@ import { INTERRUPT_SESSION } from 'store/actions/auth'
 import router from 'router'
 import VueCookies from 'vue-cookies'
 import { GET_PROFILE } from './actions/auth';
+import { SOUND_ON, SOUND_OFF } from 'store/mutations/default'
 
 Vue.use(Vuex)
 
@@ -22,6 +23,7 @@ export default new Vuex.Store({
   },
 
   state: {
+    isOnSound: false,
     isConnected: false,
     now: + new Date,
   },
@@ -38,6 +40,12 @@ export default new Vuex.Store({
     UPDATE_TIME(state) {
       state.now = + new Date
     },
+    [SOUND_ON]: (state) => {
+      state.isOnSound = true
+    },
+    [SOUND_OFF]: (state) => {
+      state.isOnSound = false
+    }
   },
 
   actions: {

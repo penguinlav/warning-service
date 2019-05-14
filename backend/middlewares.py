@@ -1,24 +1,27 @@
 from aiohttp import web
 from aiohttp.web import middleware
 from aiohttp_session import get_session
-from settings import *
+
+from db.models import User
 
 
 @middleware
 async def authorize(request, handler):
-    print('middleware ', request)
     def check_path(path):
-        result = True
-        for r in ['/auth', '/static/', '/signin', '/signout', '/_debugtoolbar/']:
-            if path.startswith('/api' + r):
-                result = False
-        return result
+        for r in ['/api/signout', '/api/profile', '/socket.io']:
+            if path.startswith(r):
+                return False
+        return True
     session = await get_session(request)
     if session.get("user"):
+        try:
+            user_obj = await User.get_user(await request.app.mgr.con, username=session.get("user"))
+            request.user = user_obj
+        except:
+            session.invalidate()
+            return web.HTTPUnauthorized()
         return await handler(request)
     elif check_path(request.path):
-        url = request.app.router['auth'].url_for()
-        session.invalidate()
-        return web.HTTPUnauthorized()
+        return await handler(request)
     else:
-          return await handler(request)
+          return web.HTTPUnauthorized()

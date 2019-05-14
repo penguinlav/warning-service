@@ -1,7 +1,6 @@
 <template>
   <v-app id="app" dark>
-    <notifications group="nav" position="top center" classes="n-light" />
-  
+    <notifications group="nav" position="top center" classes="n-light"/>
     <router-view></router-view>
     <v-dialog v-model="processed" hide-overlay persistent width="300">
       <v-card color="primary">
@@ -11,7 +10,6 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-  
   </v-app>
 </template>
 

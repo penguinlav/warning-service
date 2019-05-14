@@ -1,30 +1,23 @@
 import axios from 'axios'
 import Vue from 'vue'
-
-import { AUTH_REQUEST, AUTH_ERROR, AUTH_SUCCESS, AUTH_LOGOUT, UPDATE_TOKEN, GET_PROFILE, INTERRUPT_SESSION } from 'store/actions/auth'
+import VueCookies from 'vue-cookies'
+import { AUTH_REQUEST, AUTH_ERROR, AUTH_SUCCESS, AUTH_LOGOUT, UPDATE_TOKEN, GET_PROFILE, INTERRUPT_SESSION, FORCE_LOGOUT } from 'store/actions/auth'
 import { UPDATE_PROFILE, REMOVE_COOKIE } from 'store/mutations/auth'
 import { STOP_WEBSOCKET } from 'store/actions/default'
-
 import apiCall from '../utils/api'
 import router from 'router'
 
-import VueCookies from 'vue-cookies'
-
-
 export default {
   namespaced: true,
-
   state: {
     token: window.$cookies.get('AIOHTTP_SESSION') || '',
     status: '',
     profile: { username: '' }
   },
-
   getters: {
     isAuthenticated: state => !!state.token,
     authStatus: state => state.status,
   },
-
   actions: {
     [AUTH_REQUEST]: ({ commit, dispatch }, user) => {
       return new Promise((resolve, reject) => {
@@ -54,6 +47,7 @@ export default {
             if (!getters.isAuthenticated) {
               dispatch(STOP_WEBSOCKET, null, { root: true })
             }
+            router.push('/login')
             resolve()
           })
       })
@@ -61,28 +55,31 @@ export default {
     [GET_PROFILE]: ({ commit }) => {
       return new Promise((resolve, reject) => {
         apiCall({ url: 'profile', method: 'GET' })
-        .then(resp => {
-          commit(UPDATE_PROFILE, resp.data)
-          resolve(resp)
-        })
-        .catch(err => {
-          console.log('Profile error: ', err)
-          reject(err)
-       })
+          .then(resp => {
+            commit(UPDATE_PROFILE, resp.data)
+            resolve(resp)
+          })
+          .catch(err => {
+            console.log('Profile error: ', err)
+            reject(err)
+          })
       })
-      
+
     },
     [REMOVE_COOKIE]: ({ commit }) => {
       (new Vue).$cookies.remove('AIOHTTP_SESSION')
       commit(UPDATE_TOKEN)
     },
-    [INTERRUPT_SESSION]: ({dispatch, commit}) => {
+    [INTERRUPT_SESSION]: ({ dispatch, commit }) => {
       dispatch(STOP_WEBSOCKET, null, { root: true })
       dispatch(REMOVE_COOKIE)
       router.push('/login')
+    },
+    [FORCE_LOGOUT]: ({ dispatch }) => {
+      console.log('You are kicked')
+      dispatch(AUTH_LOGOUT)
     }
   },
-
   mutations: {
     [AUTH_REQUEST]: (state) => {
       state.status = 'loading'

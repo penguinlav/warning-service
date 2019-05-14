@@ -1,5 +1,5 @@
 import { MESSAGES, PUSH_MESSAGE, OPEN_CHAT, CLOSE_CHAT, INC_COUNTER, RESET_COUNTER, MESS_NOTIFICATION, EVENT_NOTIFICATION } from 'store/mutations/chat'
-import { MESSAGETOSERVER, ONE_MESSAGE, SET_CHAT_DIALOG } from 'store/actions/chat'
+import { MESSAGETOSERVER, ONE_MESSAGE, SET_CHAT_DIALOG, GET_MORE_MESSAGES } from 'store/actions/chat'
 import Vue from 'vue'
 
 export default {
@@ -7,12 +7,13 @@ export default {
   state: {
     messages: [],
     count: 0,
+    users: [],
     isDialogShow: false,
   },
 
   mutations: {
     [MESSAGES]: (state, payload) => {
-      state.messages = payload['messages'].slice().reverse()
+      state.messages = [...payload['messages'].slice().reverse(), ...state.messages]
       state.isNewMess = true
     },
     [PUSH_MESSAGE]: (state, payload) => {
@@ -47,10 +48,33 @@ export default {
         text: payload.place + ' ' + payload.state,
         type: payload.state == 'on' ? 'error' : 'success'
       })
+    },
+    ['SOCKET_CHAT_USERSLIST']: (state, payload) => {
+      state.users = payload
+    },
+    ['USER_IN']: (state, payload) => {
+      Vue.set(state.users, payload['sid'], { username: payload['user'] })
+    },
+    ['USER_OUT']: (state, payload) => {
+      Vue.delete(state.users, payload['sid'])
     }
   },
 
   actions: {
+    ['socket_chatUserin']: ({ commit }, payload) => {
+      console.log('userin', payload)
+      commit('USER_IN', payload)
+      payload.state = 'on'
+      payload.place = 'online'
+      commit(EVENT_NOTIFICATION, payload)
+    },
+    ['socket_chatUserout']: ({ commit }, payload) => {
+      commit('USER_OUT', payload)
+      payload.state = 'off'
+      payload.place = 'offline'
+      commit(EVENT_NOTIFICATION, payload)
+    },
+
     [SET_CHAT_DIALOG]: ({ commit, state }, payload) => {
       if (payload && !state.isDialogShow) {
         commit(OPEN_CHAT)
@@ -79,6 +103,8 @@ export default {
     [MESSAGETOSERVER]: ({ state }, payload) => {
       (new Vue()).$socket.emit(MESSAGETOSERVER, payload)
     },
-
+    [GET_MORE_MESSAGES]: ({ state }) => {
+      (new Vue()).$socket.emit(GET_MORE_MESSAGES, state.messages[0].time)
+    }
   }
 }

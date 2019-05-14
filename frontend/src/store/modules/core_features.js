@@ -15,6 +15,11 @@ export default {
 
   mutations: {
     SOCKET_CORE_UPDSTATES(state, payload) {
+      if (Object.keys(state.states).length &&
+        Object.values(payload).reduce((a, b) => a + b) == 1 &&
+        Object.values(state.states).reduce((a, b) => a + b) == 0) {
+        audio.play()
+      }
       console.log('socket: switch state cp: ', payload)
       state.states = payload
       console.log('mut upd')
