@@ -5,11 +5,11 @@ from aiohttp import web
 from aiohttp_session import session_middleware
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 
-from config import cfg, log
-from views.chat import ChatWS
-from middlewares import authorize
-from routes import routes
-from db.manager import DBManager
+from .config import cfg, log
+from .views.chat import ChatWS
+from .middlewares import authorize
+from .routes import routes
+from .db.manager import DBManager
 
 
 async def make_app(*args, **kwargs):

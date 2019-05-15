@@ -8,8 +8,8 @@
       format: '%(levelname)-8s [%(asctime)s]  %(message)s'
       file: log.log
     session_secret: test
-    #static_folder: public
+    # static_folder: public  # if you want rebuild frontend
     ldap:
-      #hostport: ldap://localhost:389
+      # hostport: ldap://localhost:389  # otherwise checks credentials from db
       connect_timeout: 10
       user_prefix: server-nr\\

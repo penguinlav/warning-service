@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from views.auth import Auth, SignOut, Profile
+from .views.auth import Auth, SignOut, Profile
 
 
 routes = [

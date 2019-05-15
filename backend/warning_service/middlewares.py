@@ -2,7 +2,7 @@ from aiohttp import web
 from aiohttp.web import middleware
 from aiohttp_session import get_session
 
-from db.models import User
+from .db.models import User
 
 
 @middleware

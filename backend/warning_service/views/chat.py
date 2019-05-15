@@ -1,9 +1,9 @@
 from datetime import datetime
-from aiohttp_session import get_session
 
+from aiohttp_session import get_session
 import socketio
 
-from db.models import User, Message
+from ..db.models import Message
 
 
 class ChatWS(socketio.AsyncNamespace):

@@ -5,8 +5,8 @@ from aiohttp import web
 from aiohttp_session import get_session
 
 
-from db.models import User
-from config import cfg, log
+from ..db.models import User
+from ..config import cfg, log
 
 
 def redirect(request, router_name):

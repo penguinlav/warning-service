@@ -3,28 +3,30 @@ Backend server
 
 Installation
 ------------
-1. Build [frontend](frontend/README.md)
-
-2. Edit `config.yml`
-
-3. Create env and install requirements:
+1. Create env and install application:
 ```bash
-$ python3 -m venv env && source env/bin/activate && pip install -r requirements.txt
+$ python3 -m venv env && source env/bin/activate && python3 setup.py install
 ```
 
-4. Apply migrations:
+2. Create config file and edit it:
+
 ```bash
-$ python run.py migrate head
+$ warning-service copyconfig
 ```
 
-5. Fill test data:
+3. Apply migrations:
 ```bash
-$ python run.py fillfixtures
+$ warning-service migrate head
+```
+
+4. Fill test data:
+```bash
+$ warning-service fillfixtures
 ```
 
 Running
 -------
 Start server:
 ```bash
-$ python run.py runserver --host localhost --port 8000
+$ warning-service runserver --host localhost --port 8000
 ```

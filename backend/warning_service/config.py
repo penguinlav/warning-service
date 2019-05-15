@@ -5,7 +5,7 @@ import aumbry
 from aumbry import Attr, YamlConfig
 
 
-BASE_PATH = os.path.dirname(__file__)
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 class DatabaseConfig(YamlConfig):
@@ -56,6 +56,7 @@ class AppConfig(YamlConfig):
     }
     session_secret = 'yep_secret'
     static_folder = property()
+    _static_folder = os.path.join(BASE_PATH, 'public')
 
     def __init__(self):
         self.logger = LoggerConfig()
@@ -66,7 +67,7 @@ class AppConfig(YamlConfig):
 
     @static_folder.getter
     def static_folder(self):
-        return os.path.join(BASE_PATH, getattr(self, '_static_folder', ''))
+        return getattr(self, '_static_folder', '')
 
 
 class ServerConfig(YamlConfig):
@@ -80,7 +81,9 @@ class ServerConfig(YamlConfig):
         self.app = AppConfig()
 
 
-cfg = aumbry.load(aumbry.FILE, ServerConfig, {'CONFIG_FILE_PATH': os.path.join(BASE_PATH, 'config.yml')})
+cfg = aumbry.load(aumbry.FILE,
+                  ServerConfig,
+                  {'CONFIG_FILE_PATH': os.path.join(os.path.abspath(os.getcwd()), 'config.yml')})
 
 
 log = logging.getLogger('app')
