@@ -16,6 +16,21 @@ class DatabaseConfig(YamlConfig):
     connection = ''
 
 
+class LoggerConfig(YamlConfig):
+    __mapping__ = {
+        'file': Attr('file', str),
+        'format': Attr('format', str),
+        'level': Attr('level', str),
+    }
+    file = None
+    level = 'INFO'
+    format = '[L:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s'
+
+    @property
+    def is_log_file(self):
+        return self.file is not None
+
+
 class LDAPConfig(YamlConfig):
     __mapping__ = {
         'hostport': Attr('hostport', str),
@@ -37,11 +52,13 @@ class AppConfig(YamlConfig):
         'static_folder': Attr('static_folder', str),
         'session_secret': Attr('session_secret', str),
         'ldap': Attr('ldap', LDAPConfig),
-        'logger_format': Attr('logger_format', str),
+        'logger': Attr('logger', LoggerConfig)
     }
-    logger_format = '[L:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s'
     session_secret = 'yep_secret'
     static_folder = property()
+
+    def __init__(self):
+        self.logger = LoggerConfig()
 
     @static_folder.setter
     def static_folder(self, v):
@@ -63,14 +80,16 @@ class ServerConfig(YamlConfig):
         self.app = AppConfig()
 
 
-
 cfg = aumbry.load(aumbry.FILE, ServerConfig, {'CONFIG_FILE_PATH': os.path.join(BASE_PATH, 'config.yml')})
 
 
 log = logging.getLogger('app')
-log.setLevel('DEBUG')
-f = logging.Formatter(cfg.app.logger_format, datefmt = '%d-%m-%Y %H:%M:%S')
+log.setLevel(cfg.app.logger.level)
+f = logging.Formatter(cfg.app.logger.format, datefmt = '%d-%m-%Y %H:%M:%S')
 ch = logging.StreamHandler()
-ch.setLevel('DEBUG')
 ch.setFormatter(f)
 log.addHandler(ch)
+if cfg.app.logger.is_log_file:
+    cf = logging.FileHandler(filename=cfg.app.logger.file)
+    cf.setFormatter(f)
+    log.addHandler(cf)

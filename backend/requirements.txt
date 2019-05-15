@@ -1,0 +1,4 @@
+aiohttp
+python-socketio
+aiohttp_session[secure]
+ldap3

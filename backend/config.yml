@@ -3,7 +3,10 @@
     connection: sqlite:////home/antons-shit/nrproject/sauron/backend/test.db
     users:
   app:
-    logger_format: '[L:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s'
+    logger:
+      level: DEBUG
+      format: '[L:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s'
+      file: log.log
     session_secret: test
     static_folder: ../frontend/dist
     ldap:
